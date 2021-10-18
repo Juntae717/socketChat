@@ -1,0 +1,9 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.socketChat.database.mybatis.mapper.LoginMapper">
+    <select id="loginDo" parameterType="LoginDTO" resultType="LoginDTO">
+        SELECT user_id, user_pwd, user_name
+        FROM userlogin
+        WHERE user_id = #{userId} AND user_pwd = sha2(#{userPwd}, 256);
+    </select>
+</mapper>
