@@ -6,4 +6,14 @@
         FROM userlogin
         WHERE user_id = #{userId} AND user_pwd = sha2(#{userPwd}, 256);
     </select>
+
+    <select id="SignUpChk" parameterType="LoginDTO" resultType="LoginDTO">
+        SELECT user_id
+        FROM userlogin
+        WHERE user_id = #{userId};
+    </select>
+
+    <insert id="SignUpDo" parameterType="LoginDTO">
+        insert into userlogin(user_id, user_pwd, user_name) values (#{userId}, sha2(#{userPwd}, 256), #{userName});
+    </insert>
 </mapper>

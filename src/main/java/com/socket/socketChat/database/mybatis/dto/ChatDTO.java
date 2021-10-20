@@ -10,6 +10,9 @@ public class ChatDTO {
     private String userId;
     private String userName;
     private String userIp;
+    private int userStatus;
+    private String chatContent;
     private String msg;
-    private Date regDate;
+    private String regDate;
+    private String regTime;
 }

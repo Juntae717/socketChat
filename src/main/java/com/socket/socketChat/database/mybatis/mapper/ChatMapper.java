@@ -8,4 +8,8 @@ import java.util.List;
 @Mapper
 public interface ChatMapper {
     void insertChatLog(ChatDTO chatDTO);
+    void updateStatus(ChatDTO chatDTO);
+    void resetStatus();
+    List<ChatDTO> selectStatus();
+    List<ChatDTO> selectChatLog(ChatDTO chatDTO);
 }

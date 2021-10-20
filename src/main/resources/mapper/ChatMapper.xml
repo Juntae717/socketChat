@@ -1,0 +1,23 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.socketChat.database.mybatis.mapper.ChatMapper">
+    <insert id="insertChatLog" parameterType="ChatDTO">
+        INSERT INTO chatlog(user_id, user_name, user_ip, chat_content, reg_time) VALUES(#{userId}, #{userName}, #{userIp}, #{msg}, #{regDate})
+    </insert>
+
+    <update id="updateStatus" parameterType="ChatDTO">
+        update userlogin set user_status = '1' where user_id = #{userId};
+    </update>
+
+    <update id="resetStatus">
+       UPDATE userlogin SET user_status = '0';
+    </update>
+
+    <select id="selectStatus" resultType="ChatDTO">
+        select user_id, user_name, user_status from userlogin order by user_status desc, user_name asc;
+    </select>
+
+    <select id="selectChatLog" parameterType="ChatDTO" resultType="ChatDTO">
+        select * from chatlog where user_id = #{userId} order by idx asc;
+    </select>
+</mapper>

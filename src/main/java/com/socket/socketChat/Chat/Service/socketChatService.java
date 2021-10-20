@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 
 @Service
@@ -49,11 +50,32 @@ public class socketChatService {
         }
     }
 
+    public String SignUpDo(HttpServletRequest request, LoginDTO loginDTO) {
+        if(loginMapper.SignUpChk(loginDTO) == null) {
+            loginMapper.SignUpDo(loginDTO);
+            return "signup success";
+        } else {
+            return "signup fail";
+        }
+    }
+
 
     public String Chat(HttpServletRequest request) { return "/chat"; }
 
     public String ChatAjax(HttpServletRequest request, ChatDTO chatDTO) {
         chatMapper.insertChatLog(chatDTO);
-        return "seccess";
+        return "success";
+    }
+
+    public List<ChatDTO> ChatSelectStatus(HttpServletRequest request, ChatDTO chatDTO) {
+        List<ChatDTO> data = chatMapper.selectStatus();
+
+        return data;
+    }
+
+    public List<ChatDTO> ChatLog(HttpServletRequest request, ChatDTO chatDTO) {
+        List<ChatDTO> data = chatMapper.selectChatLog(chatDTO);
+
+        return data;
     }
 }

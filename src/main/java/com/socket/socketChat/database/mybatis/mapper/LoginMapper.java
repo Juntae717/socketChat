@@ -4,4 +4,6 @@ import com.socket.socketChat.database.mybatis.dto.LoginDTO;
 
 public interface LoginMapper {
     LoginDTO loginDo(LoginDTO loginDTO);
+    LoginDTO SignUpChk(LoginDTO loginDTO);
+    void SignUpDo(LoginDTO loginDTO);
 }

@@ -22,19 +22,19 @@
             <table style="font-size: 20px; border-spacing: 30px;">
                 <tr>
                     <th><label style="font-size: 26px;">아이디</label></th>
-                    <td><input style="width: 300px; height: 40px;" type="text"/></td>
+                    <td><input style="width: 300px; height: 40px;" id="userId" type="text"/></td>
                 </tr>
                 <tr>
                     <th><label style="font-size: 26px;">사용자 이름</label></th>
-                    <td><input style="width: 300px; height: 40px;" type="text"/></td>
+                    <td><input style="width: 300px; height: 40px;" id="userName" type="text"/></td>
                 </tr>
                 <tr>
                     <th><label style="font-size: 26px;">비밀번호</label></th>
-                    <td><input style="width: 300px; height: 40px;" type="password"/></td>
+                    <td><input style="width: 300px; height: 40px;" id="userPwd" type="password"/></td>
                 </tr>
                 <tr>
                     <th><label style="font-size: 26px;">비밀번호 확인</label></th>
-                    <td><input style="width: 300px; height: 40px;" type="password"/></td>
+                    <td><input style="width: 300px; height: 40px;" id="userPwdChk" type="password"/></td>
                 </tr>
                 <tr>
                     <th colspan="2">
