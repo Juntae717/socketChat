@@ -40,6 +40,13 @@ public class socketChatService {
         }
     }
 
+    public String LogoutDo(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        session.removeAttribute("loginInfo");
+        return "success";
+    }
+
     public String SignUp(HttpServletRequest request) {
         HttpSession session = request.getSession();
 

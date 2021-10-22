@@ -14,10 +14,10 @@
     </update>
 
     <select id="selectStatus" resultType="ChatDTO">
-        select user_id, user_name, user_status from userlogin order by user_status desc, user_name asc;
+        SELECT user_id, user_name, user_status FROM userlogin ORDER BY user_status DESC, user_name ASC;
     </select>
 
     <select id="selectChatLog" parameterType="ChatDTO" resultType="ChatDTO">
-        select * from chatlog where user_id = #{userId} order by idx asc;
+        SELECT * FROM chatlog where user_id = #{userId} AND date_format(reg_time, '%Y-%m-%d') = date_format(#{searchDate}, '%Y-%m-%d') ORDER BY reg_time ASC;
     </select>
 </mapper>

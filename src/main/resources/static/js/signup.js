@@ -18,6 +18,9 @@ $.signup = function() {
         return false;
     }
 
+    alert("정희수 원숭이 랄랄 그만");
+    return false;
+
     const param = {
         userId: $("#userId").val(),
         userName: $("#userName").val(),

@@ -15,4 +15,5 @@ public class ChatDTO {
     private String msg;
     private String regDate;
     private String regTime;
+    private String searchDate;
 }

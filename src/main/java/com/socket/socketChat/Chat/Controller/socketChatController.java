@@ -27,6 +27,10 @@ public class socketChatController {
     @ResponseBody
     public String LoginDo(HttpServletRequest request, LoginDTO loginDTO) { return sockService.LoginDo(request, loginDTO); }
 
+    @GetMapping("/logout.do")
+    @ResponseBody
+    public String LogoutDo(HttpServletRequest request) { return sockService.LogoutDo(request); }
+
     @RequestMapping("/signup")
     public String SignUp(HttpServletRequest request) { return sockService.SignUp(request); }
 
