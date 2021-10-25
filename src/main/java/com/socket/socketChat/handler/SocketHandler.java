@@ -35,8 +35,12 @@ public class SocketHandler extends TextWebSocketHandler {
 
             chatMapper.updateStatus(chatDTO);
         } else {
-            msg = msg.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
-                    .replace("'", "&apos;").replace("\\", "&#x2F;").replace(" ", "&nbsp;").replace("\n", "<br/>");
+            if(msg == "update") {
+                chatMapper.resetStatus();
+            } else {
+                msg = msg.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
+                        .replace("'", "&apos;").replace("\\", "&#x2F;").replace(" ", "&nbsp;").replace("\n", "<br/>");
+            }
             for (String key : sessionMap.keySet()) {
                 WebSocketSession wss = sessionMap.get(key);
                 if(wss != null && wss.isOpen()) {

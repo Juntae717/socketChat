@@ -18,6 +18,10 @@ $(document).ready(function (){
     userNameVal = $("#userName").val();
     userAccessVal = $("#userAccess").val();
 
+    $("#userId").remove();
+    $("#userName").remove();
+    $("#userAccess").remove();
+
     $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
 
     function wsOpen() {
@@ -34,7 +38,7 @@ $(document).ready(function (){
 
         ws.onmessage = function(data) {
             let msg = data.data;
-            if((msg == "connect" || msg == "disconnect") && msg.trim() != "") {
+            if((msg == "update" || msg == "connect" || msg == "disconnect") && msg.trim() != "") {
                 ws.send("sendId=" + userIdVal);
                 window.setTimeout(synchronization, 100);
             } else if(msg.substring(0, 19) == "/whisperCommandLine") {
@@ -120,15 +124,46 @@ function synchronization() {
         success: function(res) {
             $("#user-status").empty();
 
+            for(let i = 0; i < res.length; i++) { if(res[i].userId == userIdVal) userAccessVal = res[i].userAccess; }
+
             for(let i = 0; i < res.length; i++) {
-                if(res[i].userStatus == 1) {
-                    if(userAccessVal == "200") {
+                if(res[i].userStatus == 1) { // user status online
+                    if(userAccessVal == "300") { // user access 300
                         if(res[i].userId == userIdVal) {
                             $("#user-status").append('<li class="user-status-list user-status-online">'
                                 + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
                                 + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
                                 + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li></ul></li>');
+                        } else if(res[i].userAccess == "300") {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="popUpWhisper(`' + res[i].userId + '`, `' + res[i].userName + '`);">귓속말</li></ul></li>');
                         } else if(res[i].userAccess == "200") {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="popUpWhisper(`' + res[i].userId + '`, `' + res[i].userName + '`);">귓속말</li>'
+                                + '<li onClick="ReleaseManager(`' + res[i].userId + '`);">관리자 해제</li></ul></li>');
+                        } else if (res[i].userAccess == "100") {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="popUpWhisper(`' + res[i].userId + '`, `' + res[i].userName + '`);">귓속말</li>'
+                                + '<li onClick="AssignManager(`' + res[i].userId + '`);">관리자 지정</li>'
+                                + '<li onClick="kickUser(`' + res[i].userId + '`);">내보내기</li>'
+                                + '<li onClick="banUser(`' + res[i].userId + '`);">차단하기</li></ul></li>');
+                        }
+                    } else if(userAccessVal == "200") { // user access 200
+                        if(res[i].userId == userIdVal) {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li></ul></li>');
+                        } else if(res[i].userAccess == "300" || res[i].userAccess == "200") {
                             $("#user-status").append('<li class="user-status-list user-status-online">'
                                 + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
                                 + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
@@ -143,7 +178,7 @@ function synchronization() {
                                 + '<li onClick="kickUser(`' + res[i].userId + '`);">내보내기</li>'
                                 + '<li onClick="banUser(`' + res[i].userId + '`);">차단하기</li></ul></li>');
                         }
-                    } else if(userAccessVal == "100") {
+                    } else if(userAccessVal == "100") { // user access 100
                         if(res[i].userId == userIdVal) {
                             $("#user-status").append('<li class="user-status-list user-status-online">'
                                 + '<span></span>' + res[i].userName + '(' + res[i].userId + ')</li>');
@@ -153,9 +188,35 @@ function synchronization() {
                                 + '<ul class="user-log-menu"><li onClick="popUpWhisper(`' + res[i].userId + '`, `' + res[i].userName + '`);">귓속말</li></ul></li>');
                         }
                     }
-                } else {
-                    if(userAccessVal == "200") {
-                        if(res[i].userAccess == "200") {
+                } else { // user status offline
+                    if(userAccessVal == "300") { // user access 200
+                        if(res[i].userAccess == "300") {
+                            $("#user-status").append('<li class="user-status-list user-status-offline">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li></ul></li>');
+                        } else if(res[i].userAccess == "200") {
+                            $("#user-status").append('<li class="user-status-list user-status-offline">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="ReleaseManager(`' + res[i].userId + '`);">관리자 해제</li></ul></li>');
+                        } else if(res[i].userAccess == "100") {
+                            $("#user-status").append('<li class="user-status-list user-status-offline">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="AssignManager(`' + res[i].userId + '`);">관리자 지정</li>'
+                                + '<li onClick="banUser(`' + res[i].userId + '`);">차단하기</li></ul></li>');
+                        } else if(res[i].userAccess == "0") {
+                            $("#user-status").append('<li class="user-status-list user-status-offline">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="pardonUser(`' + res[i].userId + '`);">차단해제</li></ul></li>');
+                        }
+                    } else if(userAccessVal == "200") { // user access 200
+                        if(res[i].userAccess == "300" || res[i].userAccess == "200") {
                             $("#user-status").append('<li class="user-status-list user-status-offline">'
                                 + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
                                 + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
@@ -173,7 +234,7 @@ function synchronization() {
                                 + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
                                 + '<li onClick="pardonUser(`' + res[i].userId + '`);">차단해제</li></ul></li>');
                         }
-                    } else if(userAccessVal == "100") {
+                    } else if(userAccessVal == "100") { // user access 100
                         $("#user-status").append('<li class="user-status-list user-status-offline">'
                             + '<span></span>' + res[i].userName + '(' + res[i].userId + ')' + '</li>');
                     }
@@ -401,8 +462,45 @@ function deletePopUp() {
     $("#popUp-container").remove();
 };
 
+function AssignManager(id) {
+    let param = {
+        userId: id
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/assign.do",
+        data: param,
+        success: function(res) {
+            ws.send("update");
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+            alert("통신 실패");
+        }
+    });
+};
+
+function ReleaseManager(id) {
+    let param = {
+        userId: id
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/release.do",
+        data: param,
+        success: function(res) {
+            ws.send("update");
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+            alert("통신 실패");
+        }
+    });
+};
+
 function kickUser(id) {
     ws.send("/kickUserCommandLine" + " " + id);
+    ws.send("update");
 };
 
 function banUser(id) {
@@ -416,6 +514,7 @@ function banUser(id) {
         data: param,
         success: function(res) {
             ws.send("/banUserCommandLine" + " " + id);
+            ws.send("update");
         },
         error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
             alert("통신 실패");
@@ -434,6 +533,7 @@ function pardonUser(id) {
         data: param,
         success: function(res) {
             ws.send("/pardonUserCommandLine");
+            ws.send("update");
         },
         error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
             alert("통신 실패");

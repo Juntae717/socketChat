@@ -31,6 +31,14 @@ public class socketChatController {
     @ResponseBody
     public String LogoutDo(HttpServletRequest request) { return sockService.LogoutDo(request); }
 
+    @PostMapping("/assign.do")
+    @ResponseBody
+    public String AssignDo(HttpServletRequest request, LoginDTO loginDTO) { return sockService.AssignDo(request, loginDTO); }
+
+    @PostMapping("/release.do")
+    @ResponseBody
+    public String ReleaseDo(HttpServletRequest request, LoginDTO loginDTO) { return sockService.ReleaseDo(request, loginDTO); }
+
     @RequestMapping("/kick.do")
     public String KickDo(HttpServletRequest request) { return sockService.KickDo(request); }
 

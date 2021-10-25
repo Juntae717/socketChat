@@ -17,6 +17,14 @@
        INSERT INTO userlogin(user_id, user_pwd, user_name) VALUES (#{userId}, sha2(#{userPwd}, 256), #{userName});
     </insert>
 
+    <update id="AssignDo" parameterType="LoginDTO">
+        UPDATE userlogin SET user_access = 200 WHERE user_id = #{userId};
+    </update>
+
+    <update id="ReleaseDo" parameterType="LoginDTO">
+        UPDATE userlogin SET user_access = 100 WHERE user_id = #{userId};
+    </update>
+
     <update id="BanDo" parameterType="LoginDTO">
         UPDATE userlogin SET user_access = 0 WHERE user_id = #{userId};
     </update>
