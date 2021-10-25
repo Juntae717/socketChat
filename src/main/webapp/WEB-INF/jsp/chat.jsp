@@ -251,6 +251,57 @@
             height: 45px;
             font-size: 14px;
         }
+
+        #popUp-container > #popUpWhisper{
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 200px;
+            background: white;
+            border: 1px solid black;
+        }
+
+        #popUp-container > #popUpWhisper > #close-btn{
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background: red;
+            text-align: center;
+            line-height: 50px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        #popUp-container > #popUpWhisper > #popUp-header > #popUp-title{
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        #popUp-container > #popUpWhisper > #popUp-content{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 150px;
+        }
+
+        #popUp-container > #popUpWhisper > #popUp-content > input[type=text]{
+            width: 500px;
+            height: 50px;
+            font-size: 20px;
+        }
+
+        #popUp-container > #popUpWhisper > #popUp-content > input[type=button]{
+            width: 100px;
+            height: 50px;
+            font-size: 20px;
+        }
     </style>
 
     <script src="/resources/js/jquery/jquery-3.2.1.min.js"></script>
@@ -263,6 +314,7 @@
     <div style="display: flex; width: 100%; height: 100%; align-items: center;">
         <input id="userId" type="hidden" value="${sessionScope.loginInfo.userId}"/>
         <input id="userName" type="hidden" value="${sessionScope.loginInfo.userName}"/>
+        <input id="userAccess" type="hidden" value="${sessionScope.loginInfo.userAccess}"/>
         <div style="display: grid; grid-template-columns: 1050px 150px; grid-template-rows: 520px 80px; width: 1200px; height: 600px; margin: 0 auto; border-top: 1px solid black; border-left: 1px solid black;">
             <div style="padding: 0 10px; border-right: 1px solid black; border-bottom: 1px solid black; word-break:break-all; overflow: scroll; overflow-x: hidden;" id="chatting">
             </div>

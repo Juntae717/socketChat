@@ -8,4 +8,5 @@ public class LoginDTO {
     private String userId;
     private String userPwd;
     private String userName;
+    private String userAccess;
 }

@@ -18,7 +18,7 @@ $.signup = function() {
         return false;
     }
 
-    alert("정희수 원숭이 랄랄 그만");
+    alert("회원가입은 관리자에게 문의해주세요.");
     return false;
 
     const param = {

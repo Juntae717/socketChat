@@ -14,7 +14,7 @@
     </update>
 
     <select id="selectStatus" resultType="ChatDTO">
-        SELECT user_id, user_name, user_status FROM userlogin ORDER BY user_status DESC, user_name ASC;
+        SELECT user_id, user_name, user_status, user_access FROM userlogin ORDER BY user_status DESC, user_name ASC;
     </select>
 
     <select id="selectChatLog" parameterType="ChatDTO" resultType="ChatDTO">

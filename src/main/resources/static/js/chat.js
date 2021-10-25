@@ -1,6 +1,10 @@
 let todayDate = new Date();
 let fmtTodayDate = todayDate.getFullYear() + "-" + ("00"+ (todayDate.getMonth() + 1)).slice(-2) + "-" + ("00" + todayDate.getDate()).slice(-2);
 
+let userIdVal = null;
+let userNameVal = null;
+let userAccessVal = null;
+
 let ip = null;
 $.getJSON("https://api.ipify.org?format=jsonp&callback=?",
     function(json) {
@@ -10,6 +14,10 @@ $.getJSON("https://api.ipify.org?format=jsonp&callback=?",
 
 let ws = null;
 $(document).ready(function (){
+    userIdVal = $("#userId").val();
+    userNameVal = $("#userName").val();
+    userAccessVal = $("#userAccess").val();
+
     $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
 
     function wsOpen() {
@@ -27,8 +35,32 @@ $(document).ready(function (){
         ws.onmessage = function(data) {
             let msg = data.data;
             if((msg == "connect" || msg == "disconnect") && msg.trim() != "") {
-                ws.send("sendId=" + $("#userId").val());
+                ws.send("sendId=" + userIdVal);
                 window.setTimeout(synchronization, 100);
+            } else if(msg.substring(0, 19) == "/whisperCommandLine") {
+                let tempArray = msg.split("&nbsp;");
+                let whisperMsg = "";
+                for(let i = 4; i < tempArray.length; i++) {
+                    whisperMsg += tempArray[i];
+                    if(i < tempArray.length - 1) {
+                        whisperMsg += " ";
+                    }
+                }
+                if(tempArray[1] == userIdVal) {
+                    $("#chatting").append("<p style='color: blue'>" + tempArray[2] + " 님에게 보낸 귓속말: " + whisperMsg  + "</p>");
+                    $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
+                }
+                if(tempArray[2] == userIdVal) {
+                    $("#chatting").append("<p style='color: blue'>" + tempArray[3] + " " + whisperMsg  + "</p>");
+                    $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
+                }
+            } else if(msg.substring(0, 20) == "/kickUserCommandLine" || msg.substring(0, 19) == "/banUserCommandLine") {
+                let tempArray = msg.split("&nbsp;");
+                if(tempArray[1] == userIdVal) {
+                    location.replace("/kick.do");
+                }
+            } else if(msg.substring(0, 22) == "/pardonUserCommandLine") {
+                // refresh
             } else if(msg != null && msg.trim() != "") {
                 $("#chatting").append("<p>" + msg + "</p>");
                 $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
@@ -56,8 +88,8 @@ function send() {
 
     let regNow = new Date();
     let param = {
-        userId: $("#userId").val(),
-        userName: $("#userName").val(),
+        userId: userIdVal,
+        userName: userNameVal,
         userIp: ip,
         msg: $("#chatText").val(),
         regDate: regNow.getFullYear() + "-" + ("00"+ (regNow.getMonth() + 1)).slice(-2) + "-" + ("00" + regNow.getDate()).slice(-2) + " "
@@ -71,9 +103,7 @@ function send() {
         data: param,
         success: function(res) {
             let msg = $("#chatText").val();
-            ws.send("[" + regNow.getFullYear() + "-" + ("00"+ (regNow.getMonth() + 1)).slice(-2) + "-" + ("00" + regNow.getDate()).slice(-2) + " "
-                + ("00" + regNow.getHours()).slice(-2) + ":" + ("00" + regNow.getMinutes()).slice(-2) + ":" + ("00" + regNow.getSeconds()).slice(-2) + "]"
-                + " " + $("#userName").val() + "(" + $("#userId").val() + ")" + "님이 보낸 메시지" + "\n" + msg);
+            ws.send(userNameVal + "(" + userIdVal + ")" + ": " + msg);
             $("#chatText").val("");
             $("#chatText").focus();
         },
@@ -92,11 +122,61 @@ function synchronization() {
 
             for(let i = 0; i < res.length; i++) {
                 if(res[i].userStatus == 1) {
-                    $("#user-status").append('<li class="user-status-list user-status-online">'
-                        + '<span></span>' + res[i].userName + '(' + res[i].userId + ')' + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li><li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li></ul></li>');
+                    if(userAccessVal == "200") {
+                        if(res[i].userId == userIdVal) {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li></ul></li>');
+                        } else if(res[i].userAccess == "200") {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="popUpWhisper(`' + res[i].userId + '`, `' + res[i].userName + '`);">귓속말</li></ul></li>');
+                        } else if (res[i].userAccess == "100") {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="popUpWhisper(`' + res[i].userId + '`, `' + res[i].userName + '`);">귓속말</li>'
+                                + '<li onClick="kickUser(`' + res[i].userId + '`);">내보내기</li>'
+                                + '<li onClick="banUser(`' + res[i].userId + '`);">차단하기</li></ul></li>');
+                        }
+                    } else if(userAccessVal == "100") {
+                        if(res[i].userId == userIdVal) {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')</li>');
+                        } else {
+                            $("#user-status").append('<li class="user-status-list user-status-online">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpWhisper(`' + res[i].userId + '`, `' + res[i].userName + '`);">귓속말</li></ul></li>');
+                        }
+                    }
                 } else {
-                    $("#user-status").append('<li class="user-status-list user-status-offline">'
-                        + '<span></span>' + res[i].userName + '(' + res[i].userId + ')' + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li><li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li></ul></li>');
+                    if(userAccessVal == "200") {
+                        if(res[i].userAccess == "200") {
+                            $("#user-status").append('<li class="user-status-list user-status-offline">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li></ul></li>');
+                        } else if(res[i].userAccess == "100") {
+                            $("#user-status").append('<li class="user-status-list user-status-offline">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="banUser(`' + res[i].userId + '`);">차단하기</li></ul></li>');
+                        } else if(res[i].userAccess == "0") {
+                            $("#user-status").append('<li class="user-status-list user-status-offline">'
+                                + '<span></span>' + res[i].userName + '(' + res[i].userId + ')'
+                                + '<ul class="user-log-menu"><li onClick="popUpMenu(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 조회</li>'
+                                + '<li onClick="popUpBackUp(`' + res[i].userId + '`, `' + res[i].userName + '`);">채팅기록 백업</li>'
+                                + '<li onClick="pardonUser(`' + res[i].userId + '`);">차단해제</li></ul></li>');
+                        }
+                    } else if(userAccessVal == "100") {
+                        $("#user-status").append('<li class="user-status-list user-status-offline">'
+                            + '<span></span>' + res[i].userName + '(' + res[i].userId + ')' + '</li>');
+                    }
                 }
             }
         },
@@ -153,7 +233,7 @@ function popUpLog(id, name) {
             let logFileName = id + "_" + param.searchDate.replaceAll("-", "");
 
             for(let i = 0; i < res.length; i++) {
-                logList += '<li class="chat-log-list">[' + res[i].regTime + ']' + res[i].chatContent + '</li>';
+                logList += '<li class="chat-log-list">[' + res[i].regTime + ']' + res[i].chatContent.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;") + '</li>';
                 logText += '[' + res[i].regTime + ']' + res[i].chatContent + '\n';
             }
 
@@ -254,7 +334,7 @@ function processFile(file, id, name) {
                 url: "/chat/ajax",
                 data: param,
                 success: function(res) {
-                    console.log(res);
+
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("통신 실패");
@@ -266,6 +346,97 @@ function processFile(file, id, name) {
     reader.readAsText(file, "UTF-8");
 };
 
+function popUpWhisper(id, name) {
+    $("body").append(
+        '<div id="popUp-container">' +
+            '<div id="popUpWhisper">' +
+                '<div id="close-btn" onClick="deletePopUp();"><span>X</span></div>' +
+                '<div id="popUp-header">' +
+                    '<h2 id="popUp-title">' + id + '(' + name + ')님에게 귓속말 보내기</h2>' +
+                '</div>' +
+                '<div id="popUp-content">' +
+                    '<input id="whisperText" type="text" placeholder="메시지 입력"/>' +
+                    '<input type="button" value="보내기" onClick="whisper(`' + id + '`, `' + name + '`)"/>' +
+                '</div>' +
+            '</div>' +
+        '</div>'
+    );
+};
+
+function whisper(id, name) {
+    if($("#whisperText").val() == "") {
+        $("#whisperText").focus();
+        return false;
+    }
+
+    let regNow = new Date();
+    let param = {
+        userId: userIdVal,
+        userName: userNameVal,
+        userIp: ip,
+        msg: $("#whisperText").val(),
+        regDate: regNow.getFullYear() + "-" + ("00"+ (regNow.getMonth() + 1)).slice(-2) + "-" + ("00" + regNow.getDate()).slice(-2) + " "
+            + ("00" + regNow.getHours()).slice(-2) + ":" + ("00" + regNow.getMinutes()).slice(-2) + ":" + ("00" + regNow.getSeconds()).slice(-2)
+    }
+
+
+    $.ajax({
+        type: "POST",
+        url: "/chat/ajax",
+        data: param,
+        success: function(res) {
+            let msg = $("#whisperText").val();
+            ws.send("/whisperCommandLine" + " " + userIdVal + " " + id + " " + userNameVal + "(" + userIdVal + ")" + ": " + msg);
+            $("#chatText").val("");
+            $("#chatText").focus();
+            deletePopUp();
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+            alert("통신 실패");
+        }
+    });
+};
+
 function deletePopUp() {
     $("#popUp-container").remove();
+};
+
+function kickUser(id) {
+    ws.send("/kickUserCommandLine" + " " + id);
+};
+
+function banUser(id) {
+    let param = {
+        userId: id
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/ban.do",
+        data: param,
+        success: function(res) {
+            ws.send("/banUserCommandLine" + " " + id);
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+            alert("통신 실패");
+        }
+    });
+};
+
+function pardonUser(id) {
+    let param = {
+        userId: id
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/pardon.do",
+        data: param,
+        success: function(res) {
+            ws.send("/pardonUserCommandLine");
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+            alert("통신 실패");
+        }
+    });
 };

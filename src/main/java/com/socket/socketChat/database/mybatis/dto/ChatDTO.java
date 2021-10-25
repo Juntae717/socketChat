@@ -16,4 +16,5 @@ public class ChatDTO {
     private String regDate;
     private String regTime;
     private String searchDate;
+    private String userAccess;
 }

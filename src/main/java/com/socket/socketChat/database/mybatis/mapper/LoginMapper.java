@@ -6,4 +6,6 @@ public interface LoginMapper {
     LoginDTO loginDo(LoginDTO loginDTO);
     LoginDTO SignUpChk(LoginDTO loginDTO);
     void SignUpDo(LoginDTO loginDTO);
+    void BanDo(LoginDTO loginDTO);
+    void PardonDo(LoginDTO loginDTO);
 }

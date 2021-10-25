@@ -34,6 +34,8 @@ public class socketChatService {
 
         if(loginMapper.loginDo(loginDTO) == null) {
             return "login fail";
+        } else if(loginMapper.loginDo(loginDTO).getUserAccess().equals("0")) {
+            return "user banned";
         } else {
             session.setAttribute("loginInfo", loginMapper.loginDo(loginDTO));
             return "login success";
@@ -44,6 +46,23 @@ public class socketChatService {
         HttpSession session = request.getSession();
 
         session.removeAttribute("loginInfo");
+        return "success";
+    }
+
+    public String KickDo(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        session.removeAttribute("loginInfo");
+        return "redirect:";
+    }
+
+    public String BanDo(HttpServletRequest request, LoginDTO loginDTO) {
+        loginMapper.BanDo(loginDTO);
+        return "success";
+    }
+
+    public String PardonDo(HttpServletRequest request, LoginDTO loginDTO) {
+        loginMapper.PardonDo(loginDTO);
         return "success";
     }
 
