@@ -1,18 +1,24 @@
+// LINE :: now date data
 let todayDate = new Date();
+// LINE :: format date data
 let fmtTodayDate = todayDate.getFullYear() + "-" + ("00"+ (todayDate.getMonth() + 1)).slice(-2) + "-" + ("00" + todayDate.getDate()).slice(-2);
 
-let userIdVal = null;
-let userNameVal = null;
-let userAccessVal = null;
 
-let ip = null;
+let userIdVal = null; // user id value to login info
+let userNameVal = null; // user name value to login info
+let userAccessVal = null; // user access value to login info
+
+let ip = null; // user ip value
+/**
+ * FUNCTION :: Get client ip info
+ */
 $.getJSON("https://api.ipify.org?format=jsonp&callback=?",
     function(json) {
         ip = json.ip;
     }
 );
 
-let ws = null;
+let ws = null; // Web Socket Object info
 $(document).ready(function (){
     userIdVal = $("#userId").val();
     userNameVal = $("#userName").val();
@@ -22,8 +28,9 @@ $(document).ready(function (){
     $("#userName").remove();
     $("#userAccess").remove();
 
-    $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
-
+    /**
+     * FUNCTION :: Web Socket Server Connect Request
+     */
     function wsOpen() {
         ws = new WebSocket("ws://"+ location.host +"/socketChat");
         wsEvt();
@@ -31,16 +38,25 @@ $(document).ready(function (){
 
     wsOpen();
 
+    /**
+     * FUNCTION :: Web Socket Event Call Back
+     */
     function wsEvt() {
+        /**
+         * FUNCTION :: Web Socket 연결 시 온라인/오프라인 유저 목록 동기화
+         */
         ws.onopen = function() {
             synchronization();
         };
 
+        /**
+         * FUNCTION :: Web Socket Server에서 보낸 메시지 받기
+         * @param data :: Web Socket Server에서 보낸 메시지 정보
+         */
         ws.onmessage = function(data) {
             let msg = data.data;
             if((msg == "update" || msg == "connect" || msg == "disconnect") && msg.trim() != "") {
-                ws.send("sendId=" + userIdVal);
-                window.setTimeout(synchronization, 100);
+                synchronization();
             } else if(msg.substring(0, 19) == "/whisperCommandLine") {
                 let tempArray = msg.split("&nbsp;");
                 let whisperMsg = "";
@@ -64,13 +80,16 @@ $(document).ready(function (){
                     location.replace("/kick.do");
                 }
             } else if(msg.substring(0, 22) == "/pardonUserCommandLine") {
-                // refresh
+                //
             } else if(msg != null && msg.trim() != "") {
                 $("#chatting").append("<p>" + msg + "</p>");
                 $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
             }
         };
 
+        /**
+         * FUNCTION :: Enter 입력 시 메시지 전송
+         */
         $(document).on("keypress", function(e){
             if(e.keyCode == 13) {
                 send();
@@ -79,6 +98,10 @@ $(document).ready(function (){
     }
 });
 
+/**
+ * FUNCTION :: 메시지 전송 시 DB서버와 Web Socket서버에 데이터를 보냄.
+ * @returns {boolean}
+ */
 function send() {
     if($("#chatText").val() == "") {
         $("#chatText").focus();
@@ -117,6 +140,9 @@ function send() {
     });
 };
 
+/**
+ * FUNCTION :: 온라인/오프라인 유저 목록 동기화, 권한에 따라 보여지는 메뉴 설정
+ */
 function synchronization() {
     $.ajax({
         type: "Get",
@@ -247,6 +273,9 @@ function synchronization() {
     });
 };
 
+/**
+ * FUNCTION :: 로그아웃 처리 기능
+ */
 function logout() {
     $.ajax({
         type: "GET",
@@ -260,6 +289,11 @@ function logout() {
     });
 }
 
+/**
+ * FUNCTION :: 채팅 로그 검색 기능(레이어 팝업)
+ * @param id :: 채팅 로그 조회 하려는 유저 아이디 정보
+ * @param name :: 채팅 로그 조회 하려는 유저 이름 정보
+ */
 function popUpMenu(id, name) {
     $("body").append(
         '<div id="popUp-container">' +
@@ -277,6 +311,11 @@ function popUpMenu(id, name) {
     );
 }
 
+/**
+ * FUNCTION :: 채팅 로그 조회 기능(레이어 팝업)
+ * @param id :: 채팅 로그 조회 하려는 유저 아이디 정보
+ * @param name :: 채팅 로그 조회 하려는 유저 이름 정보
+ */
 function popUpLog(id, name) {
     let param = {
         userId: id,
@@ -324,6 +363,11 @@ function popUpLog(id, name) {
     });
 };
 
+/**
+ * FUNCTION :: 조회한 로그 정보를 txt파일로 다운로드
+ * @param filename :: txt 파일 이름 정보
+ * @param text :: txt 파일에 들어갈 내용 정보
+ */
 function downloadLogFile(filename, text) {
     let fmtText = text.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&quot;", '"').replaceAll("&apos;", "'");
     let element = document.createElement('a');
@@ -338,6 +382,11 @@ function downloadLogFile(filename, text) {
     document.body.removeChild(element);
 };
 
+/**
+ * FUNCTION :: 다운로드 한 채팅 로그 파일을 원하는 유저의 채팅 로그 기록에 백업하는 기능
+ * @param id :: 채팅 로그 백업 하려는 유저 아이디 정보
+ * @param name :: 채팅 로그 백업 하려는 유저 이름 정보
+ */
 function popUpBackUp(id, name) {
     $("body").append(
         '<div id="popUp-container">' +
@@ -359,6 +408,9 @@ function popUpBackUp(id, name) {
     );
 };
 
+/**
+ * FUNCTION :: Input[type=file]에 입력된 파일 정보 변경 시 Label에 파일명 변경하여 삽입 하는 기능
+ */
 function fileTargetChange() {
     let filename = '';
 
@@ -371,10 +423,23 @@ function fileTargetChange() {
     $('#popUp-file > .upload-hidden').siblings('.upload-name').val(filename);
 };
 
+/**
+ * FUNCTION :: 채틸 로그 백업 기능
+ * @param id :: 채팅 로그 백업 하려는 유저 아이디 정보
+ * @param name :: 채팅 로그 백업 하려는 유저 아이디 정보
+ * @constructor
+ */
 function BackUpFile(id, name) {
     processFile($('#popUp-file > .upload-hidden')[0].files[0], id, name);
 };
 
+/**
+ * FUNCTION :: 채팅 로그 백업 파일을 읽어서 DB 서버로 데이터 전송
+ * @param file :: 채팅 로그 백업 하려는 파일 정보
+ * @param id 채팅 로그 백업 하려는 유저 아이디 정보
+ * @param name 채팅 로그 백업 하려는 유저 이름 정보
+ * @returns {boolean}
+ */
 function processFile(file, id, name) {
     if (file == null) return false;
 
@@ -407,6 +472,11 @@ function processFile(file, id, name) {
     reader.readAsText(file, "UTF-8");
 };
 
+/**
+ * FUNCTION :: 귓속말 기능(레이어 팝업)
+ * @param id :: 귓속말을 전달받을 유저 아이디 정보
+ * @param name 귓속말을 전달받을 유저 이름 정보
+ */
 function popUpWhisper(id, name) {
     $("body").append(
         '<div id="popUp-container">' +
@@ -424,6 +494,12 @@ function popUpWhisper(id, name) {
     );
 };
 
+/**
+ * FUNCTION :: Web Socket Server에 귓속말 전송
+ * @param id :: 귓속말을 전달받을 유저 아이디 정보
+ * @param name 귓속말을 전달받을 유저 이름 정보
+ * @returns {boolean}
+ */
 function whisper(id, name) {
     if($("#whisperText").val() == "") {
         $("#whisperText").focus();
@@ -458,10 +534,18 @@ function whisper(id, name) {
     });
 };
 
+/**
+ * FUNCTION :: 생성된 레이어 팝업을 없애는 기능
+ */
 function deletePopUp() {
     $("#popUp-container").remove();
 };
 
+/**
+ * FUNCTION :: 관리자 권한 부여 기능
+ * @param id :: 관리자 권한 부여할 유저 아이디 정보
+ * @constructor
+ */
 function AssignManager(id) {
     let param = {
         userId: id
@@ -480,6 +564,11 @@ function AssignManager(id) {
     });
 };
 
+/**
+ * FUNCTION :: 관리자 권한 해제 기능
+ * @param id :: 관리자 권한 해제할 유저 아이디 정보
+ * @constructor
+ */
 function ReleaseManager(id) {
     let param = {
         userId: id
@@ -498,11 +587,19 @@ function ReleaseManager(id) {
     });
 };
 
+/**
+ * FUNCTION :: 유저 내보내기 기능
+ * @param id :: 내보낼 유저 아이디 정보
+ */
 function kickUser(id) {
     ws.send("/kickUserCommandLine" + " " + id);
     ws.send("update");
 };
 
+/**
+ * FUNCTION :: 유저 차단 기능(서버 이용 불가능)
+ * @param id :: 차단할 유저 아이디 정보
+ */
 function banUser(id) {
     let param = {
         userId: id
@@ -522,6 +619,10 @@ function banUser(id) {
     });
 };
 
+/**
+ * FUNCTION :: 유저 차단 해제 기능
+ * @param id :: 차단 해제할 유저 아이디 정보
+ */
 function pardonUser(id) {
     let param = {
         userId: id

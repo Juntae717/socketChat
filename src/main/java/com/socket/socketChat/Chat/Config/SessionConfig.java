@@ -10,8 +10,16 @@ import java.util.HashMap;
 @WebListener
 public class SessionConfig implements HttpSessionListener, HttpSessionAttributeListener {
 
+    /**
+     * LINE :: 로그인 세션을 담아둘 맵
+     */
     HashMap<String, HttpSession> sessionMap = new HashMap<>();
 
+    /**
+     * FUNCTION :: 세션을 담아둔 맵에 로그인 시도한 아이디가 중복되는지 체크
+     * @param id
+     * @return
+     */
     public synchronized String SessionIdCheck(String id) {
         for(String key: sessionMap.keySet()) {
             HttpSession hs = sessionMap.get(key);
@@ -22,12 +30,19 @@ public class SessionConfig implements HttpSessionListener, HttpSessionAttributeL
         return "";
     }
 
+    /**
+     * FUNCTION :: 로그인 세션 속성 추가 시(로그인 성공) 해당 세션 값 맵에 넣음
+     * @param se
+     */
     @Override
     public void attributeAdded(HttpSessionBindingEvent se) {
-        // 프라퍼티 추가시 호출
         sessionMap.put(se.getSession().getId(), se.getSession());
     }
 
+    /**
+     * FUNCTION :: 로그인 세션 소멸시 해당 세션 맵에서 제거
+     * @param se
+     */
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         // 세션 소멸시 호출

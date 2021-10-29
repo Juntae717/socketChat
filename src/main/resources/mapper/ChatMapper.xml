@@ -1,22 +1,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.socket.socketChat.database.mybatis.mapper.ChatMapper">
+    <!-- FUNCTION :: 채팅 로그 데이터 입력 -->
     <insert id="insertChatLog" parameterType="ChatDTO">
         INSERT INTO chatlog(user_id, user_name, user_ip, chat_content, reg_time) VALUES(#{userId}, #{userName}, #{userIp}, #{msg}, #{regDate})
     </insert>
 
+    <!-- FUNCTION :: 오프라인 => 온라인 정보 변경 -->
     <update id="updateStatus" parameterType="ChatDTO">
         update userlogin set user_status = '1' where user_id = #{userId};
     </update>
 
+    <!-- FUNCTION :: 모든 유저 오프라인 상태로 초기화 -->
     <update id="resetStatus">
        UPDATE userlogin SET user_status = '0';
     </update>
 
+    <!-- FUNCTION :: 유저 정보 및 온라인/오프라인 상태 조회 -->
     <select id="selectStatus" resultType="ChatDTO">
         SELECT user_id, user_name, user_status, user_access FROM userlogin ORDER BY user_status DESC, user_name ASC;
     </select>
 
+    <!-- FUNCTION :: 채팅 로그 조회 -->
     <select id="selectChatLog" parameterType="ChatDTO" resultType="ChatDTO">
         SELECT * FROM chatlog where user_id = #{userId} AND date_format(reg_time, '%Y-%m-%d') = date_format(#{searchDate}, '%Y-%m-%d') ORDER BY reg_time ASC;
     </select>

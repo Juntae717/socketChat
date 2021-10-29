@@ -1,0 +1,45 @@
+/* settings */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+/* signup area settings */
+#signup-field {
+    padding: 150px 70px;
+}
+
+#signup-field-title {
+    font-size: 32px;
+    text-align: center;
+}
+
+#signup-field-table {
+    font-size: 20px;
+    border-spacing: 30px;
+}
+
+.signup-field-table-label {
+    font-size: 26px;
+}
+
+.signup-field-table-input {
+    width: 300px;
+    height: 40px;
+}
+
+.signup-field-table-button {
+    padding: 5px 30px;
+    font-size: 20px;
+    background: none;
+}
+
+

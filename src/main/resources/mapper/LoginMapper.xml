@@ -1,35 +1,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.socket.socketChat.database.mybatis.mapper.LoginMapper">
-    <select id="loginDo" parameterType="LoginDTO" resultType="LoginDTO">
+    <!-- FUNCTION :: 로그인 정보 조회 -->
+    <select id="selectLoginDo" parameterType="LoginDTO" resultType="LoginDTO">
         SELECT user_id, user_pwd, user_name, user_access
         FROM userlogin
         WHERE user_id = #{userId} AND user_pwd = sha2(#{userPwd}, 256);
     </select>
-
-    <select id="SignUpChk" parameterType="LoginDTO" resultType="LoginDTO">
+    <!-- FUNCTION :: 회원가입 아이디 중복 체크 -->
+    <select id="selectSignUpChk" parameterType="LoginDTO" resultType="LoginDTO">
         SELECT user_id
         FROM userlogin
         WHERE user_id = #{userId};
     </select>
 
-    <insert id="SignUpDo" parameterType="LoginDTO">
+    <!-- FUNCTION :: 회원가입 정보 입력 -->
+    <insert id="insertSignUpDo" parameterType="LoginDTO">
        INSERT INTO userlogin(user_id, user_pwd, user_name) VALUES (#{userId}, sha2(#{userPwd}, 256), #{userName});
     </insert>
 
-    <update id="AssignDo" parameterType="LoginDTO">
+    <!-- FUNCTION :: 관리자 권한 부여 -->
+    <update id="updateAssignDo" parameterType="LoginDTO">
         UPDATE userlogin SET user_access = 200 WHERE user_id = #{userId};
     </update>
 
-    <update id="ReleaseDo" parameterType="LoginDTO">
+    <!-- FUNCTION :: 관리자 권한 해제 -->
+    <update id="updateReleaseDo" parameterType="LoginDTO">
         UPDATE userlogin SET user_access = 100 WHERE user_id = #{userId};
     </update>
 
-    <update id="BanDo" parameterType="LoginDTO">
+    <!-- FUNCTION :: 사용자 차단 -->
+    <update id="updateBanDo" parameterType="LoginDTO">
         UPDATE userlogin SET user_access = 0 WHERE user_id = #{userId};
     </update>
 
-    <update id="PardonDo" parameterType="LoginDTO">
+    <!-- FUNCTION :: 사용자 차단 해제 -->
+    <update id="updatePardonDo" parameterType="LoginDTO">
         UPDATE userlogin SET user_access = 100 WHERE user_id = #{userId};
     </update>
 </mapper>

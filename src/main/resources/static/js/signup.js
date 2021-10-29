@@ -1,3 +1,7 @@
+/**
+ * FUNCTION :: 회원가입 요청
+ * @returns {boolean}
+ */
 $.signup = function() {
     if($("#userId").val() == "") {
         alert("아이디가 입력되지 않았습니다.");
@@ -43,6 +47,9 @@ $.signup = function() {
     });
 };
 
+/**
+ * FUNCTION :: 로그인 페이지로 이동
+ */
 $.moveLogin = function() {
     location.href = "/";
 };

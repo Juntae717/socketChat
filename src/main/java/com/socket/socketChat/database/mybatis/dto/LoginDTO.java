@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter @Setter
 public class LoginDTO {
-    private String userId;
-    private String userPwd;
-    private String userName;
-    private String userAccess;
+    private String userId; // 사용자 아이디
+    private String userPwd; // 사용자 패스워드
+    private String userName; // 사용자 이름
+    private String userAccess; // 사용자 권한
 }

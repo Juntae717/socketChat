@@ -1,0 +1,44 @@
+/* settings */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+/* login area settings */
+#login-field {
+    padding: 150px 70px;
+}
+
+#login-field-title {
+    font-size: 32px;
+    text-align: center;
+}
+
+#login-field-table {
+    font-size: 20px;
+    border-spacing: 30px;
+}
+
+.login-field-table-label {
+    font-size: 26px;
+}
+
+.login-field-table-input {
+    width: 300px;
+    height: 40px;
+}
+
+.login-field-table-button {
+    padding: 5px 30px;
+    font-size: 20px;
+    background: none;
+}
+

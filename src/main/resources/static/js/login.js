@@ -1,3 +1,6 @@
+/**
+ * FUNCITON :: 로그인 요청
+ */
 $.login = function() {
     const param = {
         userId: $("#userId").val(),
@@ -19,6 +22,9 @@ $.login = function() {
     });
 };
 
+/**
+ * FUNCTION :: 회원가입 페이지로 이동
+ */
 $.moveSignUp = function() {
     location.href = "/signup";
 };
