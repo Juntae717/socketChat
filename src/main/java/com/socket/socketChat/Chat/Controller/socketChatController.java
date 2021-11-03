@@ -3,9 +3,9 @@ package com.socket.socketChat.Chat.Controller;
 import com.socket.socketChat.Chat.Service.socketChatService;
 import com.socket.socketChat.database.mybatis.dto.ChatDTO;
 import com.socket.socketChat.database.mybatis.dto.LoginDTO;
+import com.socket.socketChat.database.mybatis.dto.MenuDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -153,4 +153,8 @@ public class socketChatController {
     @PostMapping("/chat/logAjax")
     @ResponseBody
     public List<ChatDTO> ChatLog(HttpServletRequest request, ChatDTO chatDTO) { return sockService.ChatLog(request, chatDTO); }
+
+    @PostMapping("/loadmenu.do")
+    @ResponseBody
+    public List<MenuDTO> LoadMenu(HttpServletRequest request, MenuDTO menuDTO) { return sockService.LoadMenu(request, menuDTO); }
 }

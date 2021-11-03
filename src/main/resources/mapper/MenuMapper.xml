@@ -1,0 +1,8 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.socketChat.database.mybatis.mapper.MenuMapper">
+    <select id="selectMenu" parameterType="MenuDTO" resultType="MenuDTO">
+        SELECT menu_name, menu_href
+        FROM menu;
+    </select>
+</mapper>

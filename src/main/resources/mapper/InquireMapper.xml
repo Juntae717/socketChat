@@ -1,0 +1,46 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.socketChat.database.mybatis.mapper.InquireMapper">
+    <insert id="insertInquireData" parameterType="InquireDTO">
+        INSERT INTO inquire(user_id, reg_date, inquire_type, inquire_title, inquire_mail, inquire_content)
+        VALUES (#{userId}, NOW(), #{inquireType}, #{inquireTitle}, #{inquireMail}, #{inquireContent});
+    </insert>
+
+    <select id="searchInquireData" parameterType="InquireDTO" resultType="InquireDTO">
+        SELECT inquire.idx,
+            CASE
+               WHEN inquire_type = 'IM' THEN '개선'
+               WHEN inquire_type = 'ER' THEN '오류'
+               WHEN inquire_type = 'ET' THEN '기타'
+               END AS inquire_type,
+               inquire_title, user_name, DATE_FORMAT(reg_date, '%Y-%m-%d') AS reg_date,
+               RANK() OVER(ORDER BY inquire.idx DESC) AS inquire_no
+        FROM inquire JOIN userlogin
+        ON userlogin.user_id = inquire.user_id
+        WHERE inquire_type LIKE CONCAT('%', #{inquireType}, '%') AND
+        <choose>
+            <when test='searchType == "A"'>
+                inquire_title LIKE CONCAT('%', #{searchData}, '%')
+                OR user_name LIKE CONCAT('%', #{searchData}, '%');
+            </when>
+            <when test='searchType == "T"'>
+                inquire_title LIKE CONCAT('%', #{searchData}, '%');
+            </when>
+            <when test='searchType == "W"'>
+                user_name LIKE CONCAT('%', #{searchData}, '%');
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectInquireDataByIdx" parameterType="InquireDTO" resultType="InquireDTO">
+        SELECT CASE
+                WHEN inquire_type = 'IM' THEN '개선'
+                WHEN inquire_type = 'ER' THEN '오류'
+                WHEN inquire_type = 'ET' THEN '기타'
+                END AS inquire_type,
+               inquire_title, user_name, DATE_FORMAT(reg_date, '%Y-%m-%d') AS reg_date, inquire_mail, inquire_content
+        FROM inquire JOIN userlogin
+        ON userlogin.user_id = inquire.user_id
+        WHERE inquire.idx = #{idx};
+    </select>
+</mapper>

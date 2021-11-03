@@ -3,15 +3,16 @@ package com.socket.socketChat.Chat.Service;
 import com.socket.socketChat.Chat.Config.SessionConfig;
 import com.socket.socketChat.database.mybatis.dto.ChatDTO;
 import com.socket.socketChat.database.mybatis.dto.LoginDTO;
+import com.socket.socketChat.database.mybatis.dto.MenuDTO;
 import com.socket.socketChat.database.mybatis.mapper.ChatMapper;
 import com.socket.socketChat.database.mybatis.mapper.LoginMapper;
+import com.socket.socketChat.database.mybatis.mapper.MenuMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.*;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -22,6 +23,7 @@ public class socketChatService {
     
     private final ChatMapper chatMapper;
     private final LoginMapper loginMapper;
+    private final MenuMapper menuMapper;
     private final SessionConfig sessionConfig;
 
     /**
@@ -164,7 +166,7 @@ public class socketChatService {
      * @param request
      * @return
      */
-    public String Chat(HttpServletRequest request) { return "/chat"; }
+    public String Chat(HttpServletRequest request) { return "/chat/chat"; }
 
     /**
      * FUNCTION :: 채팅 로그 데이터 입력
@@ -199,5 +201,9 @@ public class socketChatService {
         List<ChatDTO> data = chatMapper.selectChatLog(chatDTO);
 
         return data;
+    }
+
+    public List<MenuDTO> LoadMenu(HttpServletRequest request, MenuDTO menuDTO) {
+        return menuMapper.selectMenu(menuDTO);
     }
 }

@@ -1,7 +1,9 @@
 package com.socket.socketChat.database.mybatis.mapper;
 
 import com.socket.socketChat.database.mybatis.dto.LoginDTO;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface LoginMapper {
     /**
      * FUNCTION :: 로그인 정보 조회
