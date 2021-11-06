@@ -2,8 +2,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.socket.socketChat.database.mybatis.mapper.InquireMapper">
     <insert id="insertInquireData" parameterType="InquireDTO">
-        INSERT INTO inquire(user_id, reg_date, inquire_type, inquire_title, inquire_mail, inquire_content)
-        VALUES (#{userId}, NOW(), #{inquireType}, #{inquireTitle}, #{inquireMail}, #{inquireContent});
+        INSERT INTO inquire(user_idx, reg_date, inquire_type, inquire_title, inquire_mail, inquire_content)
+        VALUES (#{userIdx}, NOW(), #{inquireType}, #{inquireTitle}, #{inquireMail}, #{inquireContent});
     </insert>
 
     <select id="searchInquireData" parameterType="InquireDTO" resultType="InquireDTO">
@@ -13,10 +13,10 @@
                WHEN inquire_type = 'ER' THEN '오류'
                WHEN inquire_type = 'ET' THEN '기타'
                END AS inquire_type,
-               inquire_title, user_name, DATE_FORMAT(reg_date, '%Y-%m-%d') AS reg_date,
+               inquire_title, user_name, DATE_FORMAT(reg_date, '%Y-%m-%d') AS reg_date, reply_chk,
                RANK() OVER(ORDER BY inquire.idx DESC) AS inquire_no
-        FROM inquire JOIN userlogin
-        ON userlogin.user_id = inquire.user_id
+        FROM inquire LEFT JOIN userlogin
+        ON userlogin.idx = inquire.user_idx
         WHERE inquire_type LIKE CONCAT('%', #{inquireType}, '%') AND
         <choose>
             <when test='searchType == "A"'>
@@ -38,9 +38,25 @@
                 WHEN inquire_type = 'ER' THEN '오류'
                 WHEN inquire_type = 'ET' THEN '기타'
                 END AS inquire_type,
-               inquire_title, user_name, DATE_FORMAT(reg_date, '%Y-%m-%d') AS reg_date, inquire_mail, inquire_content
-        FROM inquire JOIN userlogin
-        ON userlogin.user_id = inquire.user_id
+               inquire_title, user_name, DATE_FORMAT(reg_date, '%Y-%m-%d') AS reg_date, inquire_mail, inquire_content, reply_chk
+        FROM inquire LEFT JOIN userlogin
+        ON userlogin.idx = inquire.user_idx
         WHERE inquire.idx = #{idx};
+    </select>
+
+    <update id="updateInquireReplyChk" parameterType="InquireDTO">
+        UPDATE inquire SET reply_chk = 1 WHERE idx = #{inquireIdx};
+    </update>
+
+    <insert id="insertReplyData" parameterType="InquireDTO">
+        INSERT INTO inquire_reply(inquire_idx, user_idx, reg_date, reply_title, reply_content)
+        VALUES(#{inquireIdx}, #{userIdx}, now(), #{replyTitle}, #{replyContent});
+    </insert>
+
+    <select id="selectReplyDataByIdx" resultType="InquireDTO" parameterType="InquireDTO">
+        SELECT user_name, reg_date, reply_title, reply_content
+        FROM inquire_reply JOIN userlogin
+        ON user_idx = userlogin.idx
+        WHERE inquire_idx = #{inquireIdx};
     </select>
 </mapper>

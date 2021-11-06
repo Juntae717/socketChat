@@ -100,6 +100,14 @@
             color: white;
             background-color: black;
         }
+
+        .wait {
+            color: red;
+        }
+
+        .complete {
+            color: green;
+        }
     </style>
     <!--  -->
 
@@ -317,7 +325,7 @@
                     let resultStr = "";
                     resultStr +=
                         '<colgroup>' +
-                        '<col width="10%"><col width="10%"><col width="30%"><col width="20%"><col width="30%">' +
+                        '<col width="5%"><col width="10%"><col width="30%"><col width="20%"><col width="20%"><col width="15%">' +
                         '</colgroup>' +
                         '<tr>' +
                         '<th class="search-result-head">No</th>' +
@@ -325,6 +333,7 @@
                         '<th class="search-result-head">제목</th>' +
                         '<th class="search-result-head">작성자</th>' +
                         '<th class="search-result-head">작성일</th>' +
+                        '<th class="search-result-head">답변</th>' +
                         '</tr>';
 
 
@@ -338,9 +347,14 @@
                                 '<td class="search-result-data">' + res[key].inquireNo + '</td>' +
                                 '<td class="search-result-data">' + res[key].inquireType + '</td>' +
                                 '<td class="search-result-data"><a href="/inquire/view?idx=' + res[key].idx + '">' + res[key].inquireTitle + '</a></td>' +
-                                '<td class="search-result-data">' + res[key].userName + '</td>' +
-                                '<td class="search-result-data">' + res[key].regDate + '</td>' +
-                                '</tr>';
+                                '<td class="search-result-data">' + ((res[key].userName != null) ? res[key].userName : '탈퇴한 사용자') + '</td>' +
+                                '<td class="search-result-data">' + res[key].regDate + '</td>';
+
+                            if(res[key].replyChk == 0) {
+                                resultStr += '<td class="search-result-data wait">답변 대기중</td></tr>';
+                            } else if (res[key].replyChk == 1) {
+                                resultStr += '<td class="search-result-data complete">답변 완료</td></tr>';
+                            }
                             i++;
                         }
                     }

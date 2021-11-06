@@ -30,6 +30,7 @@
     <div style="display: flex; width: 100%; height: auto; flex-direction: column; align-items: center;" id="container">
         <table style="width: 1200px; height: 100%; border-left: 1px solid black; border-top: 1px solid black; border-spacing: 0;">
             <input type="hidden" id="idx" value="${param.idx}"/>
+            <input type="hidden" id="user-access" value="${sessionScope.loginInfo.userAccess}"/>
             <caption style="font-size: 32px; font-weight: bold; padding: 15px 0;">문의 상세 화면</caption>
             <colgroup>
                 <col width="10%">
@@ -55,23 +56,34 @@
             </tr>
             <tr>
                 <th style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 0;">내용</th>
-                <td style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 10px;" id="inquire_content" colspan="3">내용이 길게 좀 나올 수도 있습니다.</td>
+                <td style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 10px;" id="inquire_content" colspan="3"></td>
             </tr>
         </table>
-        <input style="margin-top: 15px; padding: 5px 30px; font-size: 20px; background: none;" type="button" value="목록" onClick="onClickMoveList();"/>
+        <div id="reply">
+        </div>
+        <div id="view-menu">
+        </div>
     </div>
 </body>
 <script>
+    let userAccess;
+
     $(document).ready(function(){
         let param = {
             idx: $("#idx").val()
         };
+
+        userAccess = $("#user-access").val();
 
         getInquireData(param);
     });
 
     const onClickMoveList = function() {
         location.href = "/inquire";
+    };
+
+    const onClickMoveForm = function() {
+        location.href ="/inquire/form?idx=" + $("#idx").val();
     };
 
     const getInquireData = function(formData) {
@@ -82,10 +94,70 @@
             success: function(res) {
                 $("#inquire_type").html(res.inquireType);
                 $("#inquire_mail").html(res.inquireMail);
-                $("#user_name").html(res.userName);
+                $("#user_name").html((res.userName != null) ? res.userName : '탈퇴한 사용자');
                 $("#reg_date").html(res.regDate);
                 $("#inquire_title").html(res.inquireTitle);
                 $("#inquire_content").html(res.inquireContent);
+
+                if(res.replyChk == 0) {
+                    if(userAccess == '300' || userAccess == '200') {
+                        $("#view-menu").append(
+                            '<input style="margin: 15px 5px 0; padding: 5px 30px; font-size: 20px; background: none;" type="button" value="목록" onClick="onClickMoveList();"/>' +
+                            '<input style="margin: 15px 5px 0; padding: 5px 30px; font-size: 20px; background: none;" type="button" value="답변하기" onClick="onClickMoveForm();"/>'
+                        );
+                    } else {
+                        $("#view-menu").append(
+                            '<input style="margin: 15px 5px 0; padding: 5px 30px; font-size: 20px; background: none;" type="button" value="목록" onClick="onClickMoveList();"/>'
+                        );
+                    }
+
+                } else if(res.replyChk == 1) {
+                    getReplyDataByIdx(formData.idx);
+
+                    $("#view-menu").append(
+                        '<input style="margin: 15px 5px 0; padding: 5px 30px; font-size: 20px; background: none;" type="button" value="목록" onClick="onClickMoveList();"/>'
+                    );
+                }
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+                alert("통신 실패");
+            }
+        });
+    };
+
+    const getReplyDataByIdx = function(idx) {
+        let param = {
+            inquireIdx: idx
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/inquire/view/loadreply.do",
+            data: param,
+            success: function(res) {
+                console.log(res);
+                $("#reply").append(
+                    '<table style="width: 1200px; height: 100%; border-left: 1px solid black; border-top: 1px solid black; border-spacing: 0;">' +
+                    '<caption style="font-size: 32px; font-weight: bold; padding: 15px 0;">문의 답변</caption>' +
+                    '<colgroup>' +
+                    '<col width="10%"><col width="40%"><col width="10%"><col width="40%">' +
+                    '</colgroup>' +
+                    '<tr style="height: 50px;">' +
+                    '<th style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 0;">작성자</th>' +
+                    '<td style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 10px;" id="reply_user_name">' + res.userName + '</td>' +
+                    '<th style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 0;">작성일</th>' +
+                    '<td style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 10px;" id="reply_reg_date">' + res.regDate + '</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<th style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 0;">제목</th>' +
+                    '<td style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 10px;" id="reply_title" colspan="3">' + res.replyTitle + '</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<th style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 0;">내용</th>' +
+                    '<td style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 20px 10px;" id="reply_content" colspan="3">' + res.replyContent + '</td>' +
+                    '</tr>' +
+                    '</table>'
+                );
             },
             error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
                 alert("통신 실패");

@@ -10,5 +10,7 @@ public interface InquireMapper {
     void insertInquireData(InquireDTO inquireDTO);
     List<InquireDTO> searchInquireData(InquireDTO inquireDTO);
     InquireDTO selectInquireDataByIdx(InquireDTO inquireDTO);
-
+    InquireDTO selectReplyDataByIdx(InquireDTO inquireDTO);
+    void updateInquireReplyChk(InquireDTO inquireDTO);
+    void insertReplyData(InquireDTO inquireDTO);
 }

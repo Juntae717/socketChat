@@ -60,7 +60,7 @@ const onClickSave = function() {
      * @type {{inquireType: string, inquireContent: (*|jQuery), inquireTitle: (*|jQuery), userId: string, inquireMail: string}}
      */
     let param = {
-        userId: '0588',
+        userIdx: $("#userIdx").val(),
         inquireType: inquireTypeVal,
         inquireTitle: $("#inquireTitle").val(),
         inquireMail: inquireMailVal,
@@ -137,10 +137,55 @@ const SaveData = function(formData) {
     });
 };
 
+const onClickSaveReply = function(inquireIdx) {
+    let param = {
+        inquireIdx: inquireIdx,
+        userIdx: $("#userIdx").val(),
+        replyTitle: $("#replyTitle").val(),
+        replyContent: $(".note-editable").html()
+    };
+
+    ReplyValidationCheck(param);
+};
+
+const ReplyValidationCheck = function(object) {
+    for(const key in object) {
+        if(object[key] == "") {
+            alert($("#"+key+"-label").html() + "의 값이 입력되지 않았습니다.");
+            return false;
+        } else if(key == "replyContent") { // Summernote 유효성 검사
+            if($(".summernote").summernote('isEmpty')) {
+                alert($("#"+key+"-label").html() + "의 값이 입력되지 않았습니다.");
+                return false;
+            }
+        }
+    }
+    saveReplyData(object);
+};
+
+const saveReplyData = function(formData) {
+    $.ajax({
+        type: "POST",
+        url: "/reply/save.do",
+        data: formData,
+        success: function(res) {
+            location.replace("/inquire/view?idx=" + formData.inquireIdx);
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+            alert("통신 실패");
+        }
+    });
+
+};
+
 
 /**
  * FUNCTION :: 문의 목록 이동
  */
 const onClickMoveList = function() {
     location.href = "/inquire";
+};
+
+const onClickMoveView = function(idx) {
+    location.href = "/inquire/view?idx=" + idx;
 };

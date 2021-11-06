@@ -25,4 +25,14 @@ public class InquireService {
     public InquireDTO getInquireDataByIdx(InquireDTO inquireDTO) {
         return inquireMapper.selectInquireDataByIdx(inquireDTO);
     }
+
+    public String saveReplyData(InquireDTO inquireDTO) {
+        inquireMapper.insertReplyData(inquireDTO);
+        inquireMapper.updateInquireReplyChk(inquireDTO);
+        return "success";
+    }
+
+    public InquireDTO getReplyDataByIdx(InquireDTO inquireDTO) {
+        return inquireMapper.selectReplyDataByIdx(inquireDTO);
+    }
 }

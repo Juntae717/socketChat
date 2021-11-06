@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -19,14 +21,16 @@ public class InquireController {
     private final MailService mailService;
 
     @RequestMapping("/inquire")
-    public String inquire() { return "/inquire/inquire"; }
+    public String inquire(HttpServletRequest request) { return "/inquire/inquire"; }
 
     @PostMapping("/inquire/search.do")
     @ResponseBody
     public List<InquireDTO> searchInquireData(InquireDTO inquireDTO) { return inquireService.searchInquireData(inquireDTO); }
 
     @RequestMapping("/inquire/form")
-    public String inquireForm() { return "/inquire/form"; }
+    public String inquireForm(HttpServletRequest request) {
+        return "/inquire/form";
+    }
 
     @PostMapping("/inquire/form/mail.do")
     @ResponseBody
@@ -37,9 +41,17 @@ public class InquireController {
     public String saveInquireData(InquireDTO inquireDTO) { return inquireService.saveInquireData(inquireDTO); }
 
     @RequestMapping("/inquire/view")
-    public String inquireView() { return "/inquire/view"; }
+    public String inquireView(HttpServletRequest request) { return "/inquire/view"; }
 
     @PostMapping("/inquire/view/load.do")
     @ResponseBody
     public InquireDTO getInquireDataByIdx(InquireDTO inquireDTO) { return inquireService.getInquireDataByIdx(inquireDTO); }
+
+    @PostMapping("/reply/save.do")
+    @ResponseBody
+    public String saveReplyData(InquireDTO inquireDTO) { return inquireService.saveReplyData(inquireDTO); }
+
+    @PostMapping("/inquire/view/loadreply.do")
+    @ResponseBody
+    public InquireDTO getReplyDataByIdx(InquireDTO inquireDTO) { return inquireService.getReplyDataByIdx(inquireDTO); }
 }

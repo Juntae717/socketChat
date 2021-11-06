@@ -21,7 +21,7 @@ public class socketChatAspect {
      * @throws Throwable
      */
     @Around("execution(* com.socket.socketChat.Chat.Service.socketChatService.Chat*(..))")
-    public Object loginCheck(ProceedingJoinPoint joinPoint) throws Throwable{
+    public Object loginCheckChatPage(ProceedingJoinPoint joinPoint) throws Throwable{
         //Before
         System.out.println("Aop Login Check");
 
@@ -35,8 +35,31 @@ public class socketChatAspect {
         if(request != null) {
                 HttpSession session = request.getSession();
                 if (session.getAttribute("loginInfo") == null) {
-                    return "redirect:";
+                    return "redirect:/";
                 }
+        }
+
+        return joinPoint.proceed();
+        // After
+    }
+
+    @Around("execution(* com.socket.socketChat.Inquire.Controller.InquireController.inquire*(..))")
+    public Object loginCheckInquirePage(ProceedingJoinPoint joinPoint) throws Throwable{
+        //Before
+        System.out.println("Aop Login Check");
+
+        HttpServletRequest request = null;
+        for(Object args:joinPoint.getArgs()) {
+            if(args instanceof HttpServletRequest) {
+                request = (HttpServletRequest) args;
+            }
+        }
+
+        if(request != null) {
+            HttpSession session = request.getSession();
+            if (session.getAttribute("loginInfo") == null) {
+                return "redirect:/";
+            }
         }
 
         return joinPoint.proceed();

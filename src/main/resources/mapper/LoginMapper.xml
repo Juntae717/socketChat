@@ -3,7 +3,7 @@
 <mapper namespace="com.socket.socketChat.database.mybatis.mapper.LoginMapper">
     <!-- FUNCTION :: 로그인 정보 조회 -->
     <select id="selectLoginDo" parameterType="LoginDTO" resultType="LoginDTO">
-        SELECT user_id, user_pwd, user_name, user_access
+        SELECT idx, user_id, user_pwd, user_name, user_access
         FROM userlogin
         WHERE user_id = #{userId} AND user_pwd = sha2(#{userPwd}, 256);
     </select>
