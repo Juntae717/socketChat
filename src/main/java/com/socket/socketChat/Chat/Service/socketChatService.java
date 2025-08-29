@@ -10,15 +10,12 @@ import com.socket.socketChat.database.mybatis.mapper.MenuMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
-import javax.servlet.annotation.WebListener;
 import javax.servlet.http.*;
 import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
-@WebListener
 public class socketChatService {
     
     private final ChatMapper chatMapper;
